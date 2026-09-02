@@ -65,7 +65,10 @@
 
                 <!-- Лента постов -->
                 @foreach ($posts as $post)
-                    <div class="bg-white rounded-xl shadow p-4 mb-4">
+                    <div class="post bg-white rounded-xl shadow p-4 mb-4 hover:shadow-md transition"
+                         x-data="{ openComments: false }"
+                         x-id="['comments']">
+
                         <!-- Шапка поста -->
                         <div class="flex items-start space-x-3">
                             <img src="{{ $post->user->avatar ?? asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
@@ -80,15 +83,60 @@
 
                         <!-- Действия -->
                         <div class="flex items-center gap-4 mt-4 text-gray-500">
+                            <!-- Лайки -->
                             <button class="flex items-center gap-1 hover:text-red-500">
                                 ❤️ <span>{{ $post->likes->count() }}</span>
                             </button>
-                            <button class="flex items-center gap-1 hover:text-blue-500">
+
+                            <!-- Комментарии -->
+                            <button @click="openComments = !openComments"
+                                    class="flex items-center gap-1 hover:text-blue-500 transition">
                                 💬 <span>{{ $post->comments->count() }}</span>
                             </button>
+
+                            <!-- Репосты -->
                             <button class="flex items-center gap-1 hover:text-green-500">
                                 🔄 <span>{{ $post->reposts->count() }}</span>
                             </button>
+                        </div>
+
+                        <!-- Блок комментариев (раскрывается под кнопками) -->
+                        <div x-show="openComments" x-transition.duration.300ms class="mt-4 pt-4 border-t border-gray-100 space-y-4">
+                            @forelse ($post->comments as $comment)
+                                <div class="flex items-start space-x-3">
+                                    <img src="{{ $comment->user->avatar ?? asset('images/avatar-placeholder.png') }}"
+                                         class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                                         alt="{{ $comment->user->name }}">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-sm text-gray-800">{{ $comment->user->name }}</span>
+                                            <span class="text-xs text-gray-400 flex-shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-700 mt-0.5">{{ $comment->content }}</p>
+
+                                        <!-- Действия: лайк + ответить -->
+                                        <div class="flex items-center gap-4 mt-1 text-gray-400 text-xs">
+                                            <button class="flex items-center gap-1 hover:text-red-500 transition">
+                                                ❤️ <span>{{ $comment->likes->count() }}</span>
+                                            </button>
+                                            <button class="flex items-center gap-1 hover:text-blue-500 transition">
+                                                💬 Ответить
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-sm text-gray-400 text-center">Пока нет комментариев. Будьте первым!</p>
+                            @endforelse
+
+                            <!-- Форма добавления комментария (задел на будущее) -->
+                            @auth
+                                <div class="mt-3">
+                                    <input type="text"
+                                           placeholder="Написать комментарий..."
+                                           class="w-full text-sm border-0 border-b border-gray-200 focus:ring-0 focus:border-blue-500 transition">
+                                </div>
+                            @endauth
                         </div>
                     </div>
                 @endforeach

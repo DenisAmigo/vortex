@@ -10,7 +10,7 @@ class FeedController extends Controller
     public function index(): View
     {
         // Получаем все посты с пагинацией (по 10 на страницу)
-        $posts = Post::with(['user', 'likes', 'comments'])->latest()->paginate(10);
+        $posts = Post::with(['user', 'likes', 'comments.user'])->latest()->paginate(10);
 
         return view('feed', compact('posts'));
     }
