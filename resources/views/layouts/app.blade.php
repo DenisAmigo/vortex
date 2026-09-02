@@ -65,9 +65,7 @@
                                 </div>
                             @else
                                 <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 hover:text-blue-600">Войти</a>
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full transition">Регистрация</a>
-                                @endif
+                                <a href="{{ route('register') }}" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full transition">Регистрация</a>
                             @endauth
                         </div>
                     </div>

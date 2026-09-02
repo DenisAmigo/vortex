@@ -31,25 +31,37 @@
 
             <!-- Основной контент (лента) -->
             <main class="flex-1 min-w-0">
-                <!-- Форма создания поста -->
-                <div class="bg-white rounded-xl shadow p-4 mb-6">
-                    <div class="flex items-start space-x-3">
-                        <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
-                        <div class="flex-1">
-                        <textarea rows="2"
-                                  class="w-full border-0 resize-none focus:ring-0 text-gray-700 placeholder-gray-400"
-                                  placeholder="Что у вас нового, {{ auth()->user()->name ?? 'гость' }}?"></textarea>
-                            <div class="flex justify-between items-center mt-2">
-                                <button class="text-gray-400 hover:text-blue-500">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">...</svg>
-                                </button>
-                                <button class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
-                                    Опубликовать
-                                </button>
+                <!-- Форма создания поста (только для авторизованных) -->
+                @auth
+                    <div class="bg-white rounded-xl shadow p-4 mb-6">
+                        <div class="flex items-start space-x-3">
+                            <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                                 class="w-10 h-10 rounded-full object-cover" alt="Avatar">
+                            <div class="flex-1">
+                            <textarea rows="2"
+                                      class="w-full border-0 resize-none focus:ring-0 text-gray-700 placeholder-gray-400"
+                                      placeholder="Что у вас нового, {{ auth()->user()->name }}?"></textarea>
+                                <div class="flex justify-between items-center mt-2">
+                                    <button class="text-gray-400 hover:text-blue-500 transition">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">...</svg>
+                                    </button>
+                                    <button class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
+                                        Опубликовать
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    <!-- Для гостей — предложение войти или зарегистрироваться -->
+                    <div class="bg-white rounded-xl shadow p-4 mb-6 text-center">
+                        <p class="text-gray-600">
+                            <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Войдите</a> или
+                            <a href="{{ route('register') }}" class="text-blue-600 hover:underline">зарегистрируйтесь</a>,
+                            чтобы публиковать посты.
+                        </p>
+                    </div>
+                @endauth
 
                 <!-- Лента постов -->
                 @foreach ($posts as $post)
