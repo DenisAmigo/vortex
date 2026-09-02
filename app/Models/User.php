@@ -4,13 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +24,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'bio',
+        'avatar',
+        'cover',
+        'is_verified',
     ];
 
     /**
@@ -43,6 +50,54 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_verified' => 'boolean',
         ];
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    // Кто подписался на меня (мои подписчики)
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'subscriptions', 'following_id', 'follower_id');
+    }
+
+    // На кого я подписан
+    public function followings(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id');
+    }
+
+    // Сообщества, где я участник
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'community_members')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    // Сообщества, на которые я подписан
+    public function subscribedCommunities(): BelongsToMany
+    {
+        return $this->belongsToMany(Community::class, 'community_subscriptions');
+    }
+
+    // Репосты
+    public function reposts(): HasMany
+    {
+        return $this->hasMany(Repost::class);
     }
 }
