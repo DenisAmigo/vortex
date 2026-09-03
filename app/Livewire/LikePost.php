@@ -16,6 +16,8 @@ class LikePost extends Component
     public Post $post;
     public bool $isLiked;
     public int $likesCount;
+    public $likers = [];
+    public int $totalLikersCount;
 
     public function mount(Post $post): void
     {
@@ -47,6 +49,39 @@ class LikePost extends Component
         } else {
             $this->post->likes()->where('user_id', Auth::id())->delete();
         }
+    }
+
+    public function loadLikers()
+    {
+        $likers = $this->post->likes()
+            ->with('user')
+            ->get()
+            ->pluck('user')
+            ->filter()
+            ->values();
+
+        // Если пользователь авторизован, сортируем
+        if (Auth::check()) {
+            $currentUser = Auth::user();
+            $followingsIds = $currentUser->followings()->pluck('users.id')->toArray();
+
+            $likers = $likers->sortByDesc(function ($user) use ($currentUser, $followingsIds) {
+                // Сначала текущий пользователь
+                if ($user->id === $currentUser->id) {
+                    return 3;
+                }
+                // Потом подписчики
+                if (in_array($user->id, $followingsIds)) {
+                    return 2;
+                }
+                // Потом все остальные
+                return 1;
+            })->values();
+        }
+
+        $this->likers = $likers->take(3);
+
+        $this->totalLikersCount = $likers->count();
     }
 
     public function render(): View
