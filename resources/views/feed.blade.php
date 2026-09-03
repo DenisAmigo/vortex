@@ -131,9 +131,7 @@
                         <!-- Действия -->
                         <div class="flex items-center gap-4 mt-4 text-gray-500">
                             <!-- Лайки -->
-                            <button class="flex items-center gap-1 hover:text-red-500">
-                                ❤️ <span>{{ $post->likes->count() }}</span>
-                            </button>
+                            <livewire:like-post :post="$post" wire:key="like-{{ $post->id }}" />
 
                             <!-- Комментарии -->
                             <button @click="openComments = !openComments"
