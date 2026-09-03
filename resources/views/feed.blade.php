@@ -48,16 +48,81 @@
                 <!-- Лента постов -->
                 @foreach ($posts as $post)
                     <div class="post bg-white rounded-xl shadow p-4 mb-4 hover:shadow-md transition"
-                         x-data="{ openComments: false }"
+                         x-data="{ openComments: false, confirmDelete: false }"
                          x-id="['comments']">
 
                         <!-- Шапка поста -->
-                        <div class="flex items-start space-x-3">
-                            <img src="{{ $post->user->avatar ?? asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
-                            <div>
-                                <p class="font-semibold text-gray-800">{{ $post->user->name }}</p>
-                                <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-3">
+                                <img src="{{ $post->user->avatar ?? asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ $post->user->name }}</p>
+                                    <p class="text-xs text-gray-400"
+                                       title="{{ $post->created_at->format('d.m.Y H:i') }}">
+                                        {{ $post->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
                             </div>
+
+                            <!-- Кнопка меню -->
+                            @auth
+                                <div x-data="{ openMenu: false, confirmDelete: false }" class="relative">
+                                    <button @click="openMenu = !openMenu"
+                                            class="text-gray-400 hover:text-gray-600 transition p-1 rounded-full hover:bg-gray-100">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Выпадающее меню -->
+                                    <div x-show="openMenu"
+                                         x-cloak
+                                         @click.away="openMenu = false"
+                                         x-transition.duration.150ms
+                                         class="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
+
+                                        @if($post->user_id === auth()->id())
+                                            <button @click="confirmDelete = true; openMenu = false"
+                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                                🗑️ Удалить этот пост
+                                            </button>
+                                        @endif
+
+                                        <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                            🙈 Не показывать это в моей ленте
+                                        </button>
+                                    </div>
+
+                                    <!-- Модальное окно подтверждения -->
+                                    <div x-show="confirmDelete"
+                                         x-cloak
+                                         x-transition.duration.200ms
+                                         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                                         @click.away="confirmDelete = false">
+                                        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Вы уверены?</h3>
+                                            <p class="text-sm text-gray-600 mb-6">
+                                                Это действие удалит пост <span class="font-medium text-gray-800">"{{ Str::limit($post->content, 50) }}"</span>.
+                                                Отменить его будет невозможно.
+                                            </p>
+                                            <div class="flex justify-end space-x-3">
+                                                <button @click="confirmDelete = false"
+                                                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition">
+                                                    ❌ Отмена
+                                                </button>
+                                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full transition">
+                                                        ✅ Удалить
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endauth
                         </div>
 
                         <!-- Текст поста -->
@@ -92,7 +157,10 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between">
                                             <span class="font-medium text-sm text-gray-800">{{ $comment->user->name }}</span>
-                                            <span class="text-xs text-gray-400 flex-shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs text-gray-400 flex-shrink-0"
+                                                  title="{{ $comment->created_at->format('d.m.Y H:i') }}">
+                                                {{ $comment->created_at->diffForHumans() }}
+                                            </span>
                                         </div>
                                         <p class="text-sm text-gray-700 mt-0.5">{{ $comment->content }}</p>
 
