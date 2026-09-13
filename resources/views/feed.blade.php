@@ -164,9 +164,7 @@
 
                                         <!-- Действия: лайк + ответить -->
                                         <div class="flex items-center gap-4 mt-1 text-gray-400 text-xs">
-                                            <button class="flex items-center gap-1 hover:text-red-500 transition">
-                                                ❤️ <span>{{ $comment->likes->count() }}</span>
-                                            </button>
+                                            <livewire:like-comment :comment="$comment" :key="'like-comment-'.$comment->id" />
                                             <button class="flex items-center gap-1 hover:text-blue-500 transition">
                                                 💬 Ответить
                                             </button>
