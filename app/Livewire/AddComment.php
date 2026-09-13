@@ -41,7 +41,7 @@ class AddComment extends Component
         $this->content = '';
 
         // Отправляем событие для обновления списка комментариев
-        $this->dispatch('comment-added');
+        $this->dispatch('comment-added')->to(PostComments::class);
     }
 
     public function render(): View
