@@ -201,14 +201,8 @@
                                 <p class="text-sm text-gray-400 text-center">Пока нет комментариев. Будьте первым!</p>
                             @endforelse
 
-                            <!-- Форма добавления комментария (задел на будущее) -->
-                            @auth
-                                <div class="mt-3">
-                                    <input type="text"
-                                           placeholder="Написать комментарий..."
-                                           class="w-full text-sm border-0 border-b border-gray-200 focus:ring-0 focus:border-blue-500 transition">
-                                </div>
-                            @endauth
+                            <!-- Форма добавления комментария -->
+                                <livewire:add-comment :post="$post" :key="'add-comment-'.$post->id" />
                         </div>
                     </div>
                 @endforeach
