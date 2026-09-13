@@ -32,20 +32,25 @@ class LikePost extends Component
         }
     }
 
-    public function toggleLike()
+    public function toggleLike(): void
     {
-        // Если не авторизован — редирект на регистрацию (исправлено!)
         if (!Auth::check()) {
-            return redirect()->route('register');
+            $this->redirect(route('register'));
+            return;
         }
 
-        // Меняем состояние лайка (оптимистично)
+        // Меняем состояние лайка
         $this->isLiked = !$this->isLiked;
         $this->likesCount += $this->isLiked ? 1 : -1;
 
-        // Сохраняем в БД (в фоне)
         if ($this->isLiked) {
-            $this->post->likes()->create(['user_id' => Auth::id()]);
+            try {
+                $this->post->likes()->firstOrCreate(['user_id' => Auth::id()]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Ловим race condition
+                $this->isLiked = false;
+                $this->likesCount -= 1;
+            }
         } else {
             $this->post->likes()->where('user_id', Auth::id())->delete();
         }
