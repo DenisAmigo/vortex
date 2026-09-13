@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'content',
@@ -18,6 +19,14 @@ class Comment extends Model
         'user_id',
         'parent_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Comment $comment) {
+            // Удаляем лайки этого комментария
+            $comment->likes()->delete();
+        });
+    }
 
     // Связи
     public function user(): BelongsTo
