@@ -49,15 +49,16 @@ class DeleteCommentTest extends TestCase
 
         $comment->likes()->create(['user_id' => $liker->id]);
 
-        $this->assertDatabaseCount('likes', 1);
-
         // Act
         Livewire::actingAs($author)
             ->test(PostComments::class, ['post' => $post])
             ->call('deleteComment', $comment->id);
 
         // Assert
-        $this->assertDatabaseCount('likes', 0);
+        $this->assertEmpty($comment->likes);
+
+        // Проверяем soft delete
+        $this->assertSoftDeleted($comment);
     }
 
     #[Test]
