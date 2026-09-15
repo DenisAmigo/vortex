@@ -1,6 +1,6 @@
 <div class="space-y-4">
     @forelse ($comments as $comment)
-        <div class="flex items-start space-x-3">
+        <div wire:key="comment-{{ $comment->id }}" class="flex items-start space-x-3">
             <img src="{{ $comment->user->avatar ?? asset('images/avatar-placeholder.png') }}"
                  class="w-8 h-8 rounded-full object-cover flex-shrink-0"
                  alt="{{ $comment->user->name }}">

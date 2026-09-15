@@ -48,8 +48,7 @@
                 <!-- Лента постов -->
                 @foreach ($posts as $post)
                     <div class="post bg-white rounded-xl shadow p-4 mb-4 hover:shadow-md transition"
-                         x-data="{ openComments: false, confirmDelete: false }"
-                         x-id="['comments']">
+                         x-data="{ openComments: false, confirmDelete: false }">
 
                         <!-- Шапка поста -->
                         <div class="flex items-start justify-between">
