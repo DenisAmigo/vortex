@@ -14,13 +14,19 @@
                         @endif
                     </span>
                 </div>
-                <p class="text-sm text-gray-700 mt-0.5">{{ $comment->content }}</p>
+                <p class="text-sm text-gray-700 mt-0.5">
+                    @if($comment->parent_id)
+                        <a href="/profile/{{ $comment->parent->user->id }}"
+                           class="text-blue-600 hover:underline font-medium">{{ explode(' ', $comment->parent->user->name)[0] }}</a>,
+                    @endif
+                    {{ $comment->content }}
+                </p>
 
-                <!-- Действия: лайк + ответить -->
+                <!-- Блок действий -->
                 <div class="flex items-center gap-4 mt-1 text-gray-400 text-xs">
                     <livewire:like-comment :comment="$comment" :key="'like-comment-'.$comment->id" />
 
-                    <button class="flex items-center gap-1 group cursor-pointer transition-colors duration-200">
+                    <button wire:click="startReply({{ $comment->id }})" class="flex items-center gap-1 group cursor-pointer transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                         </svg>
@@ -46,6 +52,50 @@
                         </button>
                     @endif
                 </div>
+
+                <!-- Форма ответа (появляется при клике на «Ответить») -->
+                @auth
+                    @if($replyingToCommentId === $comment->id)
+                        <div class="mt-3">
+                            <div class="flex items-start space-x-2">
+                                <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                                     class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
+                                     alt="{{ auth()->user()->name }}">
+
+                                <label class="flex-1">
+                                    <textarea wire:model="replyContent"
+                                              wire:key="reply-textarea-{{ $comment->id }}"
+                                              x-data="{
+                                                  resize() {
+                                                      $el.style.height = 'auto';
+                                                      $el.style.height = $el.scrollHeight + 'px';
+                                                  }
+                                              }"
+                                              x-init="resize()"
+                                              @input="resize()"
+                                              rows="1"
+                                              class="w-full text-sm border-0 border-b border-gray-200 focus:ring-0 focus:border-blue-500 resize-none text-gray-700 placeholder-gray-400 overflow-hidden"
+                                              placeholder="Ответить {{ explode(' ', $comment->user->name)[0] }}..."></textarea>
+
+                                    <div class="flex justify-end gap-2 mt-2">
+                                        <button wire:click="cancelReply"
+                                                class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                                            Отмена
+                                        </button>
+                                        <button wire:click="addReply"
+                                                wire:loading.attr="disabled"
+                                                wire:target="addReply"
+                                                :disabled="$wire.replyContent?.trim().length < 1"
+                                                class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <span wire:loading.remove wire:target="addReply">Ответить</span>
+                                            <span wire:loading wire:target="addReply">Отправка...</span>
+                                        </button>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
             </div>
         </div>
     @empty

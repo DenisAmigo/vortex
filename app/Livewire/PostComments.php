@@ -18,6 +18,8 @@ class PostComments extends Component
     public Post $post;
     public ?int $editingCommentId = null;
     public string $editingContent = '';
+    public ?int $replyingToCommentId = null;
+    public string $replyContent = '';
 
     public function mount(Post $post): void
     {
@@ -31,6 +33,12 @@ class PostComments extends Component
         $this->post->refresh();
     }
 
+    /**
+     * Начало функционала редактирования комментария
+     *
+     * @param int $commentId
+     * @return void
+     */
     public function startEditing(int $commentId): void
     {
         $comment = Comment::findOrFail($commentId);
@@ -43,6 +51,11 @@ class PostComments extends Component
         $this->editingContent = $comment->content;
     }
 
+    /**
+     * Сохранение отредактированного комментария
+     *
+     * @return void
+     */
     public function saveEdit(): void
     {
         $this->validate([
@@ -65,10 +78,71 @@ class PostComments extends Component
         $this->dispatch('comment-updated');
     }
 
+    /**
+     * Отмена редактирования
+     *
+     * @return void
+     */
     public function cancelEdit(): void
     {
         $this->editingCommentId = null;
         $this->editingContent = '';
+    }
+
+    /**
+     * Начало функционала ответа на комментарий
+     *
+     * @param int $commentId
+     * @return void
+     */
+    public function startReply(int $commentId): void
+    {
+        if (!auth()->check()) {
+            $this->redirect(route('register'));
+            return;
+        }
+
+        $this->replyingToCommentId = $commentId;
+        $this->replyContent = '';
+        // Закрываем редактирование, если оно открыто
+        $this->editingCommentId = null;
+        $this->editingContent = '';
+    }
+
+    /**
+     * Отмена ответа
+     *
+     * @return void
+     */
+    public function cancelReply(): void
+    {
+        $this->replyingToCommentId = null;
+        $this->replyContent = '';
+    }
+
+    /**
+     * Сохранение ответа на комментарий
+     *
+     * @return void
+     */
+    public function addReply(): void
+    {
+        $this->validate([
+            'replyContent' => 'required|string|max:1000',
+        ]);
+
+        Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => auth()->id(),
+            'content' => $this->replyContent,
+            'parent_id' => $this->replyingToCommentId,
+        ]);
+
+        $this->replyingToCommentId = null;
+        $this->replyContent = '';
+
+        $this->dispatch('comment-added');
+        $this->dispatch('$refresh');
     }
 
     public function addComment(): void
@@ -87,7 +161,6 @@ class PostComments extends Component
         $this->editingContent = '';
 
         $this->dispatch('comment-added');
-
         $this->dispatch('$refresh');
     }
 
@@ -103,8 +176,6 @@ class PostComments extends Component
         $comment->delete();
 
         $this->dispatch('comment-deleted');
-
-        // Обновляем список комментариев
         $this->dispatch('$refresh');
     }
 
