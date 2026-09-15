@@ -78,7 +78,7 @@ class User extends Authenticatable
     // На кого я подписан
     public function followings(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id');
+        return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id')->withTimestamps();
     }
 
     // Сообщества, где я участник

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,5 +57,28 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    /**
+     * Display a public profile for the given user.
+     */
+    public function show(User $user): View
+    {
+        $posts = $user->posts()
+            ->with(['user', 'likes', 'comments'])
+            ->latest()
+            ->paginate(10);
+
+        $postsCount = $user->posts()->count();
+        $followersCount = $user->followers()->count();
+        $followingsCount = $user->followings()->count();
+
+        return view('profile.show', compact(
+            'user',
+            'posts',
+            'postsCount',
+            'followersCount',
+            'followingsCount',
+        ));
     }
 }

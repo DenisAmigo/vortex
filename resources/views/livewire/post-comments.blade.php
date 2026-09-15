@@ -1,12 +1,14 @@
 <div class="space-y-4">
     @forelse ($comments as $comment)
         <div wire:key="comment-{{ $comment->id }}" class="flex items-start space-x-3">
-            <img src="{{ $comment->user->avatar ?? asset('images/avatar-placeholder.png') }}"
-                 class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                 alt="{{ $comment->user->name }}">
+            <a href="{{ route('profile.show', $comment->user->id) }}">
+                <img src="{{ $comment->user->avatar ?? asset('images/avatar-placeholder.png') }}"
+                     class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                     alt="{{ $comment->user->name }}">
+            </a>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
-                    <span class="font-medium text-sm text-gray-800">{{ $comment->user->name }}</span>
+                    <a href="{{ route('profile.show', $comment->user->id) }}"><span class="font-medium text-sm text-gray-800">{{ $comment->user->name }}</span></a>
                     <span class="text-xs text-gray-400 flex-shrink-0" title="{{ $comment->created_at->format('d.m.Y H:i') }}">
                         {{ $comment->created_at->diffForHumans() }}
                         @if($comment->updated_at->gt($comment->created_at))
@@ -16,7 +18,7 @@
                 </div>
                 <p class="text-sm text-gray-700 mt-0.5">
                     @if($comment->parent_id)
-                        <a href="/profile/{{ $comment->parent->user->id }}"
+                        <a href="{{ route('profile.show', $comment->parent->user->id) }}"
                            class="text-blue-600 hover:underline font-medium">{{ explode(' ', $comment->parent->user->name)[0] }}</a>,
                     @endif
                     {{ $comment->content }}

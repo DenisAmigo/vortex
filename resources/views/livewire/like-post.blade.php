@@ -76,7 +76,7 @@
                     <ul class="space-y-2">
                         @foreach($likers as $user)
                             <li>
-                                <a href="/profile/{{ $user['id'] }}"
+                                <a href="{{ route('profile.show', $user->id) }}"
                                    class="flex items-center gap-2 hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors duration-150">
                                     <img src="{{ $user->avatar ?? asset('images/avatar-placeholder.png') }}"
                                          class="w-6 h-6 rounded-full object-cover"
