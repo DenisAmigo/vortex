@@ -39,6 +39,8 @@ class PostComments extends Component
 
         $comment->delete();
 
+        $this->dispatch('comment-deleted');
+
         // Обновляем список комментариев
         $this->dispatch('$refresh');
     }
