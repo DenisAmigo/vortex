@@ -3,7 +3,7 @@
         <div class="mt-3">
 
             <div class="flex items-start space-x-2">
-                <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : asset('images/avatar-placeholder.png') }}"
                      class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
                      alt="{{ auth()->user()->name }}">
 

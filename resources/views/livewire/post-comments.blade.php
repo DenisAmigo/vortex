@@ -2,7 +2,7 @@
     @forelse ($comments as $comment)
         <div wire:key="comment-{{ $comment->id }}" class="flex items-start space-x-3">
             <a href="{{ route('profile.show', $comment->user->id) }}">
-                <img src="{{ $comment->user->avatar ?? asset('images/avatar-placeholder.png') }}"
+                <img src="{{ $comment->user->avatar ? Storage::url($comment->user->avatar) : asset('images/avatar-placeholder.png') }}"
                      class="w-8 h-8 rounded-full object-cover flex-shrink-0"
                      alt="{{ $comment->user->name }}">
             </a>
@@ -60,7 +60,7 @@
                     @if($replyingToCommentId === $comment->id)
                         <div class="mt-3">
                             <div class="flex items-start space-x-2">
-                                <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                                <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : asset('images/avatar-placeholder.png') }}"
                                      class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
                                      alt="{{ auth()->user()->name }}">
 
@@ -108,7 +108,7 @@
     @auth
         <div class="mt-3">
             <div class="flex items-start space-x-2">
-                <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : asset('images/avatar-placeholder.png') }}"
                      class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
                      alt="{{ auth()->user()->name }}">
 

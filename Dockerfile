@@ -8,12 +8,20 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libfreetype-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
     zip \
     autoconf \
     nano \
     vim \
     sudo \
     unzip
+
+# Настройка и установка расширения GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install gd
 
 # Установка PHP расширений (добавляем pgsql и pdo_pgsql)
 RUN docker-php-ext-install pdo_pgsql pgsql mbstring zip

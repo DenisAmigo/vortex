@@ -7,7 +7,7 @@
 
     <div class="bg-white rounded-xl shadow p-4 mb-6">
         <div class="flex items-start space-x-3">
-            <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+            <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : asset('images/avatar-placeholder.png') }}"
                  class="w-10 h-10 rounded-full object-cover" alt="Avatar">
             <div class="flex-1">
                 <textarea wire:model="content"

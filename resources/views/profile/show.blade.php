@@ -23,9 +23,7 @@
                     <div class="p-6 relative">
                         <!-- Аватар -->
                         <div class="absolute -top-16 left-6">
-                            <img src="{{ $user->avatar ?? asset('images/avatar-placeholder.png') }}"
-                                 class="w-32 h-32 rounded-full border-4 border-white object-cover shadow-lg"
-                                 alt="{{ $user->name }}">
+                            <livewire:avatar-upload :user="$user" :key="'avatar-'.$user->id" />
                         </div>
 
                         <!-- Кнопка справа -->
@@ -72,7 +70,7 @@
                         <!-- Шапка поста (переиспользуем логику из feed) -->
                         <div class="flex items-start justify-between">
                             <div class="flex items-start space-x-3">
-                                <img src="{{ $post->user->avatar ?? asset('images/avatar-placeholder.png') }}"
+                                <img src="{{ $post->user->avatar ? Storage::url($post->user->avatar) : asset('images/avatar-placeholder.png') }}"
                                      class="w-10 h-10 rounded-full object-cover" alt="Avatar">
                                 <div>
                                     <p class="font-semibold text-gray-800">{{ $post->user->name }}</p>

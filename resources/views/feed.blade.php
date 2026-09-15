@@ -34,7 +34,7 @@
                         <div class="flex items-start justify-between">
                             <div class="flex items-start space-x-3">
                                 <a href="{{ route('profile.show', $post->user->id) }}" class="flex items-start space-x-3 group">
-                                    <img src="{{ $post->user->avatar ?? asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
+                                    <img src="{{ $post->user->avatar ? Storage::url($post->user->avatar) : asset('images/avatar-placeholder.png') }}" class="w-10 h-10 rounded-full" alt="Avatar">
                                     <div>
                                         <p class="font-semibold text-gray-800">{{ $post->user->name }}</p>
                                         <p class="text-xs text-gray-400"
