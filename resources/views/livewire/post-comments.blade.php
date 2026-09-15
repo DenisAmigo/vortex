@@ -9,6 +9,9 @@
                     <span class="font-medium text-sm text-gray-800">{{ $comment->user->name }}</span>
                     <span class="text-xs text-gray-400 flex-shrink-0" title="{{ $comment->created_at->format('d.m.Y H:i') }}">
                         {{ $comment->created_at->diffForHumans() }}
+                        @if($comment->updated_at->gt($comment->created_at))
+                            (изменено)
+                        @endif
                     </span>
                 </div>
                 <p class="text-sm text-gray-700 mt-0.5">{{ $comment->content }}</p>
@@ -25,7 +28,7 @@
                     </button>
 
                     @if($comment->user_id === auth()->id())
-                        <button class="flex items-center gap-1 group cursor-pointer transition-colors duration-200">
+                        <button wire:click="startEditing({{ $comment->id }})" class="flex items-center gap-1 group cursor-pointer transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 group-hover:text-yellow-500 transition-colors duration-200">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                             </svg>
@@ -50,5 +53,66 @@
     @endforelse
 
     <!-- Форма добавления комментария -->
-    <livewire:add-comment :post="$post" :key="'add-comment-'.$post->id" />
+    @auth
+        <div class="mt-3">
+            <div class="flex items-start space-x-2">
+                <img src="{{ auth()->user()->avatar ?? asset('images/avatar-placeholder.png') }}"
+                     class="w-7 h-7 rounded-full object-cover flex-shrink-0 mt-1"
+                     alt="{{ auth()->user()->name }}">
+
+                <div class="flex-1">
+                    <label x-data="{
+                        resize() {
+                            const el = $refs.textarea;
+                            if (el) {
+                                el.style.height = 'auto';
+                                el.style.height = el.scrollHeight + 'px';
+                            }
+                        }
+                    }"
+                           x-effect="openComments && $nextTick(() => resize())">
+                    <textarea x-ref="textarea"
+                              wire:model="editingContent"
+                              wire:key="add-comment-textarea-{{ $post->id }}"
+                              x-init="resize()"
+                              @input="resize()"
+                              rows="1"
+                              class="w-full text-sm border-0 border-b border-gray-200 focus:ring-0 focus:border-blue-500 resize-none text-gray-700 placeholder-gray-400 overflow-hidden"
+                              placeholder="{{ $editingCommentId ? 'Редактирование...' : 'Написать комментарий...' }}"></textarea>
+                    </label>
+
+                    <div class="flex justify-end gap-2 mt-2" x-show="$wire.editingContent?.trim().length > 0" x-transition>
+                        @if($editingCommentId)
+                            <button wire:click="cancelEdit"
+                                    class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                                Отмена
+                            </button>
+                            <button wire:click="saveEdit"
+                                    wire:loading.attr="disabled"
+                                    wire:target="saveEdit"
+                                    :disabled="$wire.editingContent?.trim().length < 1"
+                                    class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span wire:loading.remove wire:target="saveEdit">Сохранить</span>
+                                <span wire:loading wire:target="saveEdit">Сохранение...</span>
+                            </button>
+                        @else
+                            <button wire:click="$set('editingContent', '')"
+                                    type="button"
+                                    class="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                                Очистить
+                            </button>
+                            <button wire:click="addComment"
+                                    wire:loading.attr="disabled"
+                                    wire:target="addComment"
+                                    :disabled="$wire.editingContent?.trim().length < 1"
+                                    class="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span wire:loading.remove wire:target="addComment">Отправить</span>
+                                <span wire:loading wire:target="addComment">Отправка...</span>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endauth
 </div>
