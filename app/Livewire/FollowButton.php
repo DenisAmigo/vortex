@@ -42,6 +42,8 @@ class FollowButton extends Component
             Auth::user()->followings()->attach($this->user->id);
             $this->isFollowing = true;
         }
+
+        $this->dispatch('follow-toggled');
     }
 
     public function render(): View

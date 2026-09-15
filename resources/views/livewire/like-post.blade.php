@@ -93,7 +93,7 @@
 
                         @if($totalLikersCount > 3)
                             <li class="text-sm text-gray-400 pl-2">
-                                и ещё {{ $totalLikersCount - 3 }} человек(-а)
+                                и ещё {{ $totalLikersCount - 3 }} {{ plural($totalLikersCount - 3, 'человек', 'человека', 'человек') }}
                             </li>
                         @endif
                     </ul>

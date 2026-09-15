@@ -70,15 +70,11 @@ class ProfileController extends Controller
             ->paginate(10);
 
         $postsCount = $user->posts()->count();
-        $followersCount = $user->followers()->count();
-        $followingsCount = $user->followings()->count();
 
         return view('profile.show', compact(
             'user',
             'posts',
             'postsCount',
-            'followersCount',
-            'followingsCount',
         ));
     }
 }

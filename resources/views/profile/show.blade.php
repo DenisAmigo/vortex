@@ -51,16 +51,11 @@
                         <div class="flex items-center gap-6 mt-4 text-sm">
                             <div>
                                 <span class="font-semibold text-gray-900">{{ $postsCount }}</span>
-                                <span class="text-gray-500 ml-1">постов</span>
+                                <span class="text-gray-500 ml-1">{{ plural($postsCount, 'пост', 'поста', 'постов') }}</span>
                             </div>
-                            <div>
-                                <span class="font-semibold text-gray-900">{{ $followersCount }}</span>
-                                <span class="text-gray-500 ml-1">подписчиков</span>
-                            </div>
-                            <div>
-                                <span class="font-semibold text-gray-900">{{ $followingsCount }}</span>
-                                <span class="text-gray-500 ml-1">подписок</span>
-                            </div>
+
+                            <livewire:follow-count :user="$user" :key="'follow-count-'.$user->id" />
+
                             <div class="text-gray-400 text-xs ml-auto">
                                 На сайте с {{ $user->created_at->format('d.m.Y') }}
                             </div>
