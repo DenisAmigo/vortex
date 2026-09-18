@@ -43,9 +43,7 @@
                             <span class="group-hover:text-yellow-500 transition-colors duration-200">Редактировать</span>
                         </button>
 
-                        <button wire:click="deleteComment({{ $comment->id }})"
-                                wire:loading.attr="disabled"
-                                wire:target="deleteComment({{ $comment->id }})"
+                        <button @click="$dispatch('open-delete-modal', { id: {{ $comment->id }}, postId: {{ $post->id }}, hasReplies: {{ $comment->replies()->exists() ? 'true' : 'false' }} })"
                                 class="flex items-center gap-1 group cursor-pointer transition-colors duration-200">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors duration-200">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -167,4 +165,39 @@
             </div>
         </div>
     @endauth
+
+    <!-- Модалка подтверждения удаления -->
+    <div x-data="{ open: false, commentId: null, hasReplies: false }"
+         @open-delete-modal.window="
+             if ($event.detail.postId === {{ $post->id }}) {
+                open = true;
+                commentId = $event.detail.id;
+                hasReplies = $event.detail.hasReplies;
+            }
+         "
+         x-show="open"
+         x-cloak
+         x-transition.duration.200ms
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+         @click.away="open = false">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Удалить комментарий?</h3>
+            <p class="text-sm text-gray-600 mb-6">
+                Это действие нельзя отменить.
+                <template x-if="hasReplies">
+                    <span>Ответы на этот комментарий <strong>останутся</strong>.</span>
+                </template>
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button @click="open = false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition">
+                    Отмена
+                </button>
+                <button @click="$wire.deleteComment(commentId); open = false"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full transition">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
