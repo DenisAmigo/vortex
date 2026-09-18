@@ -25,8 +25,10 @@
                     <div class="flex items-center justify-between h-16">
                         <!-- Логотип -->
                         <div class="flex items-center">
-                            <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition">
-                                🌀 Vortex
+                            <a href="{{ route('home') }}" class="flex items-center">
+                                <img src="{{ asset('images/logo.png') }}"
+                                     alt="Vortex"
+                                     class="h-10 w-auto">
                             </a>
                         </div>
 
