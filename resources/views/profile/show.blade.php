@@ -85,6 +85,15 @@
                         <!-- Текст поста -->
                         <p class="mt-2 text-gray-700 whitespace-pre-wrap">{{ $post->content }}</p>
 
+                        <!-- Картинка поста -->
+                        @if($post->image)
+                            <div class="-mx-4 mt-3">
+                                <img src="{{ Storage::url($post->image) }}"
+                                     class="w-full max-h-96 object-cover cursor-pointer"
+                                     alt="Post image">
+                            </div>
+                        @endif
+
                         <!-- Кнопки действий (лайк, комментарии, репост) -->
                         <div class="flex items-center gap-6 mt-4 text-gray-500">
                             <livewire:like-post :post="$post" :key="'like-'.$post->id" />

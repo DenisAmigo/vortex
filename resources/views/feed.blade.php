@@ -107,7 +107,16 @@
                         </div>
 
                         <!-- Текст поста -->
-                        <p class="mt-2 text-gray-700">{{ $post->content }}</p>
+                        <p class="mt-2 text-gray-700 whitespace-pre-wrap">{{ $post->content }}</p>
+
+                        <!-- Картинка поста -->
+                        @if($post->image)
+                            <div class="-mx-4 mt-3">
+                                <img src="{{ Storage::url($post->image) }}"
+                                     class="w-full max-h-96 object-cover cursor-pointer"
+                                     alt="Post image">
+                            </div>
+                        @endif
 
                         <!-- Действия -->
                         <div class="flex items-center gap-4 mt-4 text-gray-500">
