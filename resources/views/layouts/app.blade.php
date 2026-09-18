@@ -18,6 +18,20 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-gray-50">
+        @impersonating
+        <div class="bg-yellow-100 border-b border-yellow-300 px-4 py-2 flex items-center justify-between">
+            <p class="text-sm text-yellow-800">
+                Вы имперсонируете <strong>{{ auth()->user()->name }}</strong>
+            </p>
+            <form action="{{ route('impersonate.leave') }}" method="POST">
+                @csrf
+                <button type="submit"
+                        class="text-sm font-medium text-yellow-800 hover:text-yellow-900 underline">
+                    Выйти
+                </button>
+            </form>
+        </div>
+        @endimpersonating
         <div class="min-h-screen">
             <!-- Header -->
             <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -59,8 +73,14 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
                                     </button>
-                                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
-                                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Профиль</a>
+                                    <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-200 z-50">
+                                        <a href="{{ route('profile.show', auth()->id()) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Профиль</a>
+                                        @role('vortex_admin')
+                                            <a href="{{ route('admin.users.index') }}"
+                                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                                Пользователи
+                                            </a>
+                                        @endrole
                                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Настройки</a>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf

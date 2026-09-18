@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Mirror\Contracts\Impersonatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Impersonatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -52,6 +53,24 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_verified' => 'boolean',
         ];
+    }
+
+    /**
+     * Кто может имперсонировать?
+     * Только vortex_admin.
+     */
+    public function canImpersonate(): bool
+    {
+        return $this->hasRole('vortex_admin');
+    }
+
+    /**
+     * Кого можно имперсонировать?
+     * Всех, кроме vortex_admin.
+     */
+    public function canBeImpersonated(): bool
+    {
+        return ! $this->hasRole('vortex_admin');
     }
 
     public function posts(): HasMany

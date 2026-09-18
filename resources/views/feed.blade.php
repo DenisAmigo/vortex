@@ -89,14 +89,14 @@
                                             <div class="flex justify-end space-x-3">
                                                 <button @click="confirmDelete = false"
                                                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition">
-                                                    ❌ Отмена
+                                                    Отмена
                                                 </button>
                                                 <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
                                                             class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-full transition">
-                                                        ✅ Удалить
+                                                        Удалить
                                                     </button>
                                                 </form>
                                             </div>
@@ -133,7 +133,7 @@
                         </div>
 
                         <!-- Блок комментариев (раскрывается) -->
-                        <div x-show="openComments" x-transition.duration.300ms class="mt-4 pt-4 border-t border-gray-100 space-y-4">
+                        <div x-show="openComments" x-transition.duration.300ms x-cloak class="mt-4 pt-4 border-t border-gray-100 space-y-4">
                             <livewire:post-comments :post="$post" :key="'comments-'.$post->id" />
                         </div>
                     </div>
